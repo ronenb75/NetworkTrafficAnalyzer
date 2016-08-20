@@ -18,6 +18,8 @@ if ($db->connect_errno > 0) {
 		var xmlhttp = new Array();
 		var elementID = new Array();
 
+// This is an ajax call to do the DNS lookup. We want the table to load quickly and resolve will happen when it's ready
+// Since we will have many ajax calls at once, we need to index them as they async coming back to us
 		function dnsLookup (elementID, ipToLookup) {
 			index = xmlhttp.length;
 			xmlhttp[index] = (new XMLHttpRequest());
@@ -32,6 +34,7 @@ if ($db->connect_errno > 0) {
 			xmlhttp[index].send();
 		}
 
+// This is an ajax call to do expande the source list
 		function expandDetails(dstIP) {
 			var td = document.getElementById(dstIP + '_dst'), rowLocation = td.parentNode.rowIndex + 1;
 
@@ -43,6 +46,7 @@ if ($db->connect_errno > 0) {
 				if (this.readyState==4 && this.status==200) {
 					var tableToExpand = document.getElementById("networkDetails");
 
+					// the ajax returns a JSON string with the list
 					var list = JSON.parse(this.response);
 
     				for(i = 0; i < list.length; i++) {
@@ -67,6 +71,7 @@ if ($db->connect_errno > 0) {
 					}
 				td.innerHTML = originalInnerHTML;
 				td.parentNode.className = "bold";
+				// Removing the expand icon
 				document.getElementById(dstIP + '_expand').style.display = 'none';
 				}
 			}
@@ -74,6 +79,7 @@ if ($db->connect_errno > 0) {
 			xmlhttp.send();
 		}
 
+// Function to reveal the hidden div to put the screen on and the edit input, filling the input with pre-exsiting name
 		function PopupEditName (ip, name) {
 			document.getElementById('editPopupDiv').style.display = "block";
 
@@ -88,6 +94,7 @@ if ($db->connect_errno > 0) {
 			  document.getElementById('editPopupInputName').focus();
 		}
 
+// Ajax call to create or update the alias and the IP, and hide the update div screen.
 		function updateNameInDB () {
 			var ip = document.getElementById('editPopupInputIP').innerHTML;
 			var name = document.getElementById('editPopupInputName').value;
@@ -99,6 +106,7 @@ if ($db->connect_errno > 0) {
 			document.getElementById('editPopupDiv').style.display = "none";
 		}
 
+// Ajax call to delete an IP completely from the database		
 		function deleteIP (ip) {
 			var confirm = prompt('Are you sure you want to delete all records with the IP ' + ip + '?\n\nType "YES"');
 
@@ -125,6 +133,7 @@ if ($db->connect_errno > 0) {
 </div>
 
 <script>
+// Hiding the popup div if clicked outside the box or ESC was pressed
 	window.onclick = function(event) {
 		if (event.target == document.getElementById('editPopupDiv')) {
 			document.getElementById('editPopupDiv').style.display = "none";
@@ -139,6 +148,7 @@ if ($db->connect_errno > 0) {
 
 
 <?
+// Get the destination list. Only those who overall traffic of more then 5Mbytes
 $sql = 'select ips.name as name, INET_NTOA(dstIP) as dstIP, sum(traffic)/1048576 as totalTraffic from traffic left join ips on traffic.dstIP = ips.ip group by dstIP having totalTraffic > 5 order by totalTraffic desc';
 
 if (!$traffic = $db->query($sql)) {

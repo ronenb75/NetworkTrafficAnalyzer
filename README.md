@@ -16,3 +16,4 @@ Adding to that, I'm a huge believer in K.I.S.S, meaning my code is minimal, to d
 Security note: As you can see, there is NO SECURITY what-so-ever in this code! Linux root access, empty MySQL root password, no input sensitising, bare ajax functions etc. Since it's all sitting inside my home environment with no access from the outside, I let myself go naked. Please DO NOT USE THIS CODE AS IT IS in any kind of production environment without putting security measures first!
 
 Any improvements will be gladly accepted.
+Blog post regaring this tool can be found here: http://blog.ronenb.com/2016/08/20/network-traffic-analyzer-with-raspberrypi/
