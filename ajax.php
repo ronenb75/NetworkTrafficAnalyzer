@@ -70,4 +70,28 @@ if (isset($_GET['deleteIP'])) {
 
 	$db->close();
 }
+
+if (isset($_GET['commonlyUsed'])) {
+	$db = new mysqli('localhost', 'root', '', 'network');
+
+	if ($db->connect_errno > 0)
+		die("Unable to connect to database [" . $db->connect_error . "]");
+
+	$sql = 'select name, count(name) as times from ips group by name having times > 1 order by times desc';
+
+	if (!$srcList = $db->query($sql))
+		die ('Error: '.$sql.'<br>'.$db->error);
+
+	$list = array();
+	$i = 0;
+	
+	while ($row = $srcList->fetch_assoc()) {
+		$list[$i] = array($row['name']);
+		$i++;
+	}
+
+	$db->close();
+
+	echo (json_encode($list, TRUE));
+}
 ?>

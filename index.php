@@ -91,7 +91,23 @@ if ($db->connect_errno > 0) {
 			  	document.getElementById('editPopupInputName').value = '';	
 			  }
 
-			  document.getElementById('editPopupInputName').focus();
+			document.getElementById('editPopupInputName').focus();
+
+  			xmlhttp = (new XMLHttpRequest());
+			xmlhttp.onreadystatechange=function() {
+				if (this.readyState==4 && this.status==200) {
+				var list = JSON.parse(this.responseText);
+				console.log(this.responseText);
+				console.log(list);
+				var editPopupInputName = document.getElementById('editPopupInputName');
+				document.getElementById("commonlyUsed").innerHTML = '<p>Commonly used before (click to insert):</p>'
+   				for(i = 0; i < list.length; i++) {
+					document.getElementById("commonlyUsed").innerHTML += '<span OnClick=\'editPopupInputName.value = "'+list[i]+'"\'>'+list[i]+'</span><br />';
+					}
+				}
+			}
+			xmlhttp.open("GET","ajax.php?commonlyUsed", true);
+			xmlhttp.send();
 		}
 
 // Ajax call to create or update the alias and the IP, and hide the update div screen.
@@ -127,9 +143,11 @@ if ($db->connect_errno > 0) {
 
 <div id="editPopupDiv" class="editPopup">
 	<div class="editPopupContent">
-		<span id="editPopupClose" class="editPopupClose" OnClick="document.getElementById('editPopupDiv').style.display = 'none'">×</span>
-		<p>Assign name to <span id="editPopupInputIP"></span>: <input type="text" id="editPopupInputName" size="30" OnBlur="updateNameInDB()" OnKeyDown="if (event.keyCode == 13) updateNameInDB()" /> </p>
+		<span id="editPopupClose" class="editPopupClose" OnClick="document.getElementById('editPopupDiv').style.display='none'">×</span>
+		<p>Assign name to <span id="editPopupInputIP"></span>: <input type="text" id="editPopupInputName" size="30" OnKeyDown="if (event.keyCode == 13) updateNameInDB()" /><button OnClick="updateNameInDB();">Update</button></p>
+		<div id="commonlyUsed" class="commonlyUsed"></div>
 	</div>
+	
 </div>
 
 <script>
@@ -155,12 +173,12 @@ if (!$traffic = $db->query($sql)) {
 	die ('Error: '.$sql.'<br>'.$db->error);
 }
 ?>
-	<table id="networkDetails" border="1" class="Table" style="width: 60%">
+	<table id="networkDetails" border="1" class="Table" style="width: 80%">
 		<tr>
-			<th style="width: 75%";>Destination</th>
-			<th>Traffic</th>
-			<th style="width: 7%";>First Seen<br />(days)</th>
-			<th style="width: 7%";>Last update<br />(days)</th>
+			<th style="width: 65%";>Destination</th>
+			<th style="width: 20%";>Traffic</th>
+			<th style="width: 5%";>First Seen<br />(days)</th>
+			<th style="width: 5%";>Last update<br />(days)</th>
 		</tr>
 <?
 			while ($row = $traffic->fetch_assoc()) { ?>
